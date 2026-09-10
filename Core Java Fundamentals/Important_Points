@@ -1,0 +1,64 @@
+*JVM----heap memory,stack memory,seprate area for all the static veriables,class loders
+Java is 99.99 percent Object oriented ....that remaning percentage is of premitive data types they does dont extends objects...other than that every class extends the class object
+.
+.
+in java class loads first then methods are executed
+class loded only once...so static block is only called once and that as well in the start of the program.
+but if we dont create the object the class will not get loded....but what if we want class to load...without the objectthen we have to ise class class
+
+
+
+
+Math.random() can be used for generaring random values...these values are generated in decimal...so we have to type cast and store these values into the int.
+Math.random() is a built-in method that generates a decimal number between 0.0 and 0.999 (for example, 0.4582).
+If you cast 0.4582 directly into an int, Java doesn't round it. It just violently chops off the decimal part, leaving you with 0.
+If you run it like that, your entire board will just be zeros!
+.
+.
+Array--
+stored in heap memory
+Contuneous memory allocation..so size can't be expanded..soln for it is create new arrwy of that size
+.
+.
+s1=s1+" can be updated by the value again and again";//concatination always works...
+// because in concatination we are judt changing the address of the veriable...
+// old will remain as it is...and new object with the concatenated form will be created...
+// Now the old s1 is eligible for the garbage collection..it will be removed from memory after some time...to get memory back
+String s3="Abhay";
+String s4="Abhay";//so all three objects will be showing the exact same address...
+// because of String constant pool...it make shure that same string should not be allocated diff addresses in the heap memory
+.
+.
+object stored in heap memory
+every function has its own stack for saving veriable name and its corresponding addresses
+but if i wnat to have my local veriable and instance verible as same name...then i have to use this keyword
+.
+.
+Multiple inheritance --- does not work in java...can be indirectly used by using interfaces.
+.
+.
+/*
+every constructor has a method in it called super...even if we dont mention it 
+so every constructor first statement is super...it means call the constructor of a super class
+*/
+.
+.
+every class in java extends the object class.
+.
+.
+.
+PACKAGES
+//Syntax to import the packages from different folder....
+// and also make sure all the class and methods are public
+//Inheritance is only possible in same folder or same file....if this is not the case then we have to import the class using the package name
+import InheritancePackages.AdvanceCalculator;
+import InheritancePackages.Calculator;
+import InheritancePackages.VeryAdvCalc;
+//we can also use oer defined classes / interfaces
+import java.util.ArrayList; 
+//enable us to use Arraylist...Basically we have the java folder and inside that folder we have the util folder
+//whichever class we use in java belongs to a package/folder...System,String
+import java.lang.*;
+//By default imported in every package
+//if in 1 folder we have multiple files then we can simply write the name of the folder.* ---this calls all the files from that specific folder----NOT all the folders
+//if we have folder inside folder---- then we can simply do...import folder.inside_folder_name;
