@@ -1,0 +1,552 @@
+Threads:-Smallest unit of execution...Threads can share the resources
+
+Software -->OS-->Hardware(CPU,RAM)Ram-Temporary memory
+    |
+   But there are multiple software to run on 1 OS(MultiTasking) 
+
+8 core = 8 threads can be executed at 1 time
+Multicore = Multiple threads can be executed.
+
+CPU -2 core...And 8 threads are needed to be executed...so CPU allow 2 thread at a time...and they are scheduled according to the scheduling algotithms.
+
+Mutations in threads are not good...threads should be imutable...
+so that no 2 person can access the threads at same time.
+so we can also use thread state...at one time only one can access the perticular thread.
+
+.
+.
+.
+.
+/*
+===============================================================================
+                         THREADS IN JAVA
+===============================================================================
+
+Thread:
+A thread is a lightweight unit of execution.
+
+A Java program can have multiple threads running concurrently.
+
+Example:
+
+        Main Thread
+             |
+      +------+------+
+      |             |
+   Thread-1      Thread-2
+      |             |
+    Task A        Task B
+
+
+===============================================================================
+                        THREAD LIFE CYCLE / STATES
+===============================================================================
+
+Java officially has 6 Thread.State values:
+
+                    NEW
+                     |
+                     | start()
+                     ↓
+                  RUNNABLE
+                  /      \
+                 /        \
+                ↓          ↓
+          BLOCKED       WAITING
+                \          /
+                 \        /
+                  ↓      ↓
+                  RUNNABLE
+                     |
+                     ↓
+              TIMED_WAITING
+                     |
+                     ↓
+                  RUNNABLE
+                     |
+                     ↓
+                TERMINATED
+
+
+1. NEW
+   Thread object is created but start() has not been called.
+
+2. RUNNABLE
+   Thread is ready to run or is currently running.
+   Java combines "ready" and "running" under RUNNABLE.
+
+3. BLOCKED
+   Thread is waiting to acquire a monitor lock.
+
+4. WAITING
+   Thread waits indefinitely for another thread to perform an action.
+   Example: wait(), join()
+
+5. TIMED_WAITING
+   Thread waits for a specified amount of time.
+   Example: sleep(), timed join(), wait(timeout)
+
+6. TERMINATED
+   Thread has finished execution.
+
+
+===============================================================================
+                         RACE CONDITION
+===============================================================================
+
+Race condition occurs when:
+
+    Multiple threads access shared data
+    at the same time
+    AND
+    the final result depends on the timing/order
+    in which the threads execute.
+
+
+Example:
+
+    Shared variable:
+        count = 0
+
+    Thread-1 → count++
+    Thread-2 → count++
+
+
+Expected:
+
+    0 → 1 → 2
+
+But internally:
+
+    count++ is NOT one single operation.
+
+It is approximately:
+
+    1. READ count
+    2. ADD 1
+    3. WRITE count
+
+
+Possible execution:
+
+Thread-1                 Thread-2
+   |                        |
+ READ count (0)             |
+   |                     READ count (0)
+ ADD 1                      |
+   |                     ADD 1
+ WRITE 1                    |
+   |                     WRITE 1
+
+
+Final value = 1
+
+Expected value = 2
+
+This is a RACE CONDITION.
+
+
+===============================================================================
+                    RACE CONDITION - ACTUAL CODE
+===============================================================================
+*/
+
+class Counter {
+
+    int count = 0;
+
+    // This method is NOT synchronized.
+    // Multiple threads can execute it at the same time.
+    void increment() {
+
+        count++;
+    }
+}
+
+
+public class ThreadDemo {
+
+    public static void main(String[] args) throws InterruptedException {
+
+        Counter counter = new Counter();
+
+        // Thread 1
+        Thread t1 = new Thread(() -> {
+
+            for (int i = 0; i < 1000; i++) {
+                counter.increment();
+            }
+
+        });
+
+        // Thread 2
+        Thread t2 = new Thread(() -> {
+
+            for (int i = 0; i < 1000; i++) {
+                counter.increment();
+            }
+
+        });
+
+
+        /*
+        =========================================================================
+                                THREAD STATES
+        =========================================================================
+
+        At this point, both threads are in NEW state.
+
+        start() changes the thread from:
+
+            NEW → RUNNABLE
+        */
+
+        System.out.println("Before start:");
+        System.out.println("T1: " + t1.getState());
+        System.out.println("T2: " + t2.getState());
+
+
+        // Starting the threads
+        t1.start();
+        t2.start();
+
+
+        /*
+        =========================================================================
+                             JOIN()
+        =========================================================================
+
+        join() makes the main thread wait until the specified
+        thread finishes.
+
+        Without join():
+
+            main()
+              |
+              +---- t1
+              |
+              +---- t2
+              |
+              +---- may print count before t1/t2 finish
+
+        With join():
+
+            main()
+              |
+              +---- waits for t1
+              |
+              +---- waits for t2
+              |
+              +---- prints final count
+        */
+
+        t1.join();
+        t2.join();
+
+
+        System.out.println("Final count: " + counter.count);
+
+
+        /*
+        =========================================================================
+                            WHY IS THE RESULT WRONG?
+        =========================================================================
+
+        We performed:
+
+            1000 increments in Thread-1
+            1000 increments in Thread-2
+
+        Expected:
+
+            2000
+
+        But because count++ is not atomic,
+        the actual result may be less than 2000.
+
+        Example:
+
+            Expected = 2000
+            Actual   = 1847
+
+        The exact result can change every time.
+
+        This is a RACE CONDITION.
+
+
+        =========================================================================
+                         FIXING THE RACE CONDITION
+        =========================================================================
+
+        We use the synchronized keyword.
+
+        Change:
+
+            void increment()
+
+        to:
+
+            synchronized void increment()
+
+
+        Then only ONE thread at a time can execute increment().
+
+        Thread-1                  Thread-2
+           |                         |
+        gets lock                   |
+           |                         |
+        increment()                 |
+           |                         |
+        releases lock               |
+                                     ↓
+                                  gets lock
+                                     |
+                                  increment()
+                                     |
+                                  releases lock
+
+
+        This prevents multiple threads from modifying
+        the shared variable simultaneously.
+        */
+
+
+        /*
+        =========================================================================
+                            SYNCHRONIZED EXAMPLE
+        =========================================================================
+        */
+
+        CounterSafe safeCounter = new CounterSafe();
+
+        Thread t3 = new Thread(() -> {
+
+            for (int i = 0; i < 1000; i++) {
+                safeCounter.increment();
+            }
+
+        });
+
+        Thread t4 = new Thread(() -> {
+
+            for (int i = 0; i < 1000; i++) {
+                safeCounter.increment();
+            }
+
+        });
+
+        t3.start();
+        t4.start();
+
+        t3.join();
+        t4.join();
+
+        System.out.println("Safe final count: " + safeCounter.count);
+    }
+}
+
+
+/*
+===============================================================================
+                     SYNCHRONIZED COUNTER
+===============================================================================
+*/
+
+class CounterSafe {
+
+    int count = 0;
+
+    /*
+    synchronized means:
+
+    Only one thread can execute this method
+    on the same CounterSafe object at a time.
+
+    Therefore, the critical section is protected.
+    */
+
+    synchronized void increment() {
+
+        count++;
+    }
+}
+
+
+/*
+===============================================================================
+                         IMPORTANT TERMS
+===============================================================================
+
+THREAD
+    ↓
+Independent path of execution.
+
+
+CONCURRENCY
+    ↓
+Multiple tasks make progress during overlapping periods.
+
+
+SHARED RESOURCE
+    ↓
+Data/resource accessed by multiple threads.
+
+Example:
+
+    count
+
+
+RACE CONDITION
+    ↓
+Multiple threads access shared data and the result
+depends on execution timing.
+
+
+CRITICAL SECTION
+    ↓
+Part of code where shared data is accessed/modified.
+
+
+synchronized
+    ↓
+Allows only one thread at a time to enter the
+synchronized section for the same lock.
+
+
+join()
+    ↓
+Makes the current thread wait until another thread finishes.
+
+
+sleep()
+    ↓
+Pauses the current thread for a specified time.
+
+Example:
+
+    Thread.sleep(1000);
+
+    // 1000 milliseconds = 1 second
+
+
+===============================================================================
+                         THREAD STATE EXAMPLE
+===============================================================================
+
+Thread t = new Thread(() -> {
+
+    System.out.println("Running");
+
+});
+
+
+                    t
+                    |
+                    ↓
+                  NEW
+                    |
+                  start()
+                    |
+                    ↓
+                RUNNABLE
+                    |
+             +------+------+
+             |             |
+          sleep()       waiting for
+             |          synchronized
+             ↓             |
+       TIMED_WAITING    BLOCKED
+             |             |
+             +------+------+
+                    |
+                    ↓
+                RUNNABLE
+                    |
+                    ↓
+              task completed
+                    |
+                    ↓
+               TERMINATED
+
+
+===============================================================================
+                    MOST IMPORTANT EXAM POINTS
+===============================================================================
+
+1. Thread is a unit of execution.
+
+2. start() starts a new thread.
+
+3. Calling run() directly does NOT create a new thread.
+   
+       t.run();      // normal method call
+       t.start();    // starts a new thread
+
+4. Java has 6 official Thread.State values:
+
+       NEW
+       RUNNABLE
+       BLOCKED
+       WAITING
+       TIMED_WAITING
+       TERMINATED
+
+5. Race condition occurs because multiple threads access
+   shared data without proper synchronization.
+
+6. count++ is NOT atomic.
+
+7. synchronized can protect a critical section.
+
+8. join() makes one thread wait for another thread to finish.
+
+9. sleep() puts the current thread into TIMED_WAITING.
+
+10. A thread that has completed cannot be started again.
+
+
+===============================================================================
+                           MEMORY TRICK
+===============================================================================
+
+Thread States:
+
+NEW
+ ↓
+RUNNABLE
+ ↓
++----------+----------+
+|          |          |
+BLOCKED   WAITING   TIMED_WAITING
+|          |          |
++----------+----------+
+           ↓
+       RUNNABLE
+           ↓
+      TERMINATED
+
+
+Race Condition:
+
+Multiple Threads
+       ↓
+Shared Data
+       ↓
+No Proper Synchronization
+       ↓
+Timing-dependent Result
+       ↓
+RACE CONDITION
+
+
+Solution:
+
+        synchronized
+             ↓
+      One thread at a time
+             ↓
+      Protected shared data
+
+
+===============================================================================
+*/

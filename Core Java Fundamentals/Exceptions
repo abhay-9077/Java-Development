@@ -1,0 +1,591 @@
+Errors Types -- Compile time Errors(Mostly shown in IDE ex.syntax error)
+                Logical Errors(Bugs)
+
+                Run time Errors---(every was working but suddenly the execution stops)
+                so we try avoid this errors so that app do not stop....
+                this is known as exception handling and this type of error is known as an exception
+
+Statement --    Normal Statement--int i =0;
+                Critical Statement--int j =18/i;
+                now we will get an arethmatic exception...this stops the execution.
+                after this point code will not run..so it is always better to handle the exception.
+
+Throwable --exception--runtime exception--specific exception-->Parent to child sequence
+.
+.
+.
+/*
+================================================================================
+                    JAVA CLASS & EXCEPTION HIERARCHY
+================================================================================
+
+
+1. BASIC JAVA CLASS HIERARCHY
+-----------------------------
+
+                         Object
+                            |
+             +--------------+--------------+
+             |                             |
+          Classes                       Interfaces
+             |
+       Every Java class
+       directly/indirectly
+       extends Object
+
+================================================================================
+2. OBJECT CLASS
+================================================================================
+
+                         Object
+                            |
+        +-------------------+--------------------+
+        |                   |                    |
+      Class               String             Exception
+        |                                      |
+     Student                                ...
+        |
+      Employee
+
+
+Important methods of Object:
+
+Object
+ |
+ +-- toString()
+ |
+ +-- equals()
+ |
+ +-- hashCode()
+ |
+ +-- getClass()
+ |
+ +-- clone()
+ |
+ +-- wait()
+ |
+ +-- notify()
+ |
+ +-- notifyAll()
+
+
+================================================================================
+3. EXCEPTION HIERARCHY
+================================================================================
+
+
+                              Object
+                                |
+                             Throwable
+                                |
+                 +--------------+--------------+
+                 |                             |
+               Error                       Exception
+                 |                             |
+        +--------+--------+           +--------+---------+
+        |        |        |           |                  |
+     Virtual  OutOfMemory  ...   RuntimeException    Other Exceptions
+     Machine   Error
+     Error
+                                      |
+                         +------------+------------+
+                         |            |            |
+                  ArithmeticException |     NullPointerException
+                                      |
+                              IndexOutOfBoundsException
+                                      |
+                              +-------+-------+
+                              |               |
+                      ArrayIndexOutOfBounds  StringIndexOutOfBounds
+
+
+================================================================================
+4. COMPLETE IMPORTANT HIERARCHY
+================================================================================
+
+
+Object
+  |
+  +-- Throwable
+       |
+       +-- Error
+       |    |
+       |    +-- OutOfMemoryError
+       |    |
+       |    +-- StackOverflowError
+       |    |
+       |    +-- VirtualMachineError
+       |         |
+       |         +-- InternalError
+       |         +-- UnknownError
+       |
+       +-- Exception
+            |
+            +-- RuntimeException
+            |    |
+            |    +-- ArithmeticException
+            |    |
+            |    +-- NullPointerException
+            |    |
+            |    +-- ClassCastException
+            |    |
+            |    +-- IllegalArgumentException
+            |    |     |
+            |    |     +-- NumberFormatException
+            |    |
+            |    +-- IndexOutOfBoundsException
+            |    |     |
+            |    |     +-- ArrayIndexOutOfBoundsException
+            |    |     |
+            |    |     +-- StringIndexOutOfBoundsException
+            |    |
+            |    +-- IllegalStateException
+            |    |
+            |    +-- ConcurrentModificationException
+            |    |
+            |    +-- UnsupportedOperationException
+            |    |
+            |    +-- SecurityException
+            |
+            +-- IOException
+            |    |
+            |    +-- FileNotFoundException
+            |    |
+            |    +-- EOFException
+            |    |
+            |    +-- SocketException
+            |
+            +-- SQLException
+            |
+            +-- ClassNotFoundException
+            |
+            +-- InterruptedException
+            |
+            +-- ParseException
+            |
+            +-- ReflectiveOperationException
+                 |
+                 +-- ClassNotFoundException
+                 +-- NoSuchMethodException
+                 +-- NoSuchFieldException
+
+
+================================================================================
+5. MAIN DIFFERENCE: ERROR vs EXCEPTION
+================================================================================
+
+
+Throwable
+   |
+   +------------------+
+   |                  |
+ Error             Exception
+   |                  |
+Serious JVM       Problems that
+/system problems  application can
+                  generally handle
+
+
+ERROR:
+
+Error
+ |
+ +-- OutOfMemoryError
+ +-- StackOverflowError
+
+Usually we DON'T handle Errors manually.
+
+
+EXCEPTION:
+
+Exception
+ |
+ +-- RuntimeException
+ +-- IOException
+ +-- SQLException
+ +-- etc.
+
+Exceptions are generally problems that applications can handle.
+
+
+================================================================================
+6. EXCEPTION -> CHECKED vs UNCHECKED
+================================================================================
+
+
+                         Throwable
+                            |
+                         Exception
+                            |
+              +-------------+-------------+
+              |                           |
+      RuntimeException             Other Exceptions
+              |                           |
+         UNCHECKED                    CHECKED
+         EXCEPTIONS                  EXCEPTIONS
+
+
+UNCHECKED EXCEPTIONS
+--------------------
+
+RuntimeException
+ |
+ +-- ArithmeticException
+ |
+ +-- NullPointerException
+ |
+ +-- ClassCastException
+ |
+ +-- IllegalArgumentException
+ |      |
+ |      +-- NumberFormatException
+ |
+ +-- IndexOutOfBoundsException
+ |      |
+ |      +-- ArrayIndexOutOfBoundsException
+ |      |
+ |      +-- StringIndexOutOfBoundsException
+ |
+ +-- IllegalStateException
+ |
+ +-- ConcurrentModificationException
+ |
+ +-- UnsupportedOperationException
+
+
+CHECKED EXCEPTIONS
+------------------
+
+Exception
+ |
+ +-- IOException
+ |     |
+ |     +-- FileNotFoundException
+ |     +-- EOFException
+ |     +-- SocketException
+ |
+ +-- SQLException
+ |
+ +-- ClassNotFoundException
+ |
+ +-- InterruptedException
+ |
+ +-- ParseException
+
+
+================================================================================
+7. MOST COMMON RUNTIME EXCEPTIONS
+================================================================================
+
+
+RuntimeException
+ |
+ +-- ArithmeticException
+ |       Example: 10 / 0
+ |
+ +-- NullPointerException
+ |       Example: object.method() when object == null
+ |
+ +-- ArrayIndexOutOfBoundsException
+ |       Example: arr[10] when array size is 5
+ |
+ +-- StringIndexOutOfBoundsException
+ |       Example: "Java".charAt(10)
+ |
+ +-- ClassCastException
+ |       Example: String s = (String) object;
+ |
+ +-- NumberFormatException
+ |       Example: Integer.parseInt("abc")
+ |
+ +-- IllegalArgumentException
+ |       Invalid argument passed to a method
+ |
+ +-- IllegalStateException
+ |       Method called at an inappropriate state
+ |
+ +-- ConcurrentModificationException
+ |       Collection modified while iterating
+ |
+ +-- UnsupportedOperationException
+         Operation is not supported
+
+
+================================================================================
+8. MOST COMMON CHECKED EXCEPTIONS
+================================================================================
+
+
+Exception
+ |
+ +-- IOException
+ |      |
+ |      +-- FileNotFoundException
+ |      +-- EOFException
+ |      +-- SocketException
+ |
+ +-- SQLException
+ |
+ +-- ClassNotFoundException
+ |
+ +-- InterruptedException
+
+
+Examples:
+
+IOException
+    -> File/input/output operation problem
+
+FileNotFoundException
+    -> File does not exist / cannot be opened
+
+SQLException
+    -> Database-related problem
+
+ClassNotFoundException
+    -> JVM cannot find requested class
+
+InterruptedException
+    -> Thread is interrupted while waiting/sleeping
+
+
+================================================================================
+9. SIMPLE EXCEPTION FLOW
+================================================================================
+
+
+                         Object
+                           |
+                       Throwable
+                           |
+              +------------+------------+
+              |                         |
+            Error                    Exception
+              |                         |
+       Usually not handled       +-------+-------+
+                                 |               |
+                         RuntimeException    Checked
+                                 |            Exceptions
+                                 |
+                             Unchecked
+                             Exceptions
+
+
+================================================================================
+10. IMPORTANT RULE TO REMEMBER
+================================================================================
+
+
+                    Object
+                      |
+                  Throwable
+                 /         \
+              Error      Exception
+                           |
+                 +---------+---------+
+                 |                   |
+          RuntimeException      Other Exception
+                 |                   |
+             UNCHECKED             CHECKED
+
+
+RuntimeException = Unchecked Exception
+
+Exception (excluding RuntimeException subclasses) = Checked Exception
+
+
+================================================================================
+11. EXAMPLE CODE
+================================================================================
+*/
+
+
+class Demo {
+
+    public static void main(String[] args) {
+
+        // ArithmeticException
+        int a = 10 / 0;
+
+        // NullPointerException
+        String str = null;
+        System.out.println(str.length());
+
+        // ArrayIndexOutOfBoundsException
+        int[] arr = {10, 20, 30};
+        System.out.println(arr[5]);
+
+        // NumberFormatException
+        int number = Integer.parseInt("abc");
+
+        // ClassCastException
+        Object obj = Integer.valueOf(10);
+        String s = (String) obj;
+    }
+}
+
+
+/*
+================================================================================
+12. TRY-CATCH HIERARCHY
+================================================================================
+
+
+try
+ |
+ +-- Code that may throw exception
+ |
+catch
+ |
+ +-- Handle exception
+ |
+finally
+ |
+ +-- Code that normally executes regardless of exception
+
+
+Example:
+*/
+
+class ExceptionDemo {
+
+    public static void main(String[] args) {
+
+        try {
+
+            int result = 10 / 0;
+
+        } catch (ArithmeticException e) {
+
+            System.out.println("Cannot divide by zero");
+
+        } finally {
+
+            System.out.println("Finally block");
+
+        }
+    }
+}
+
+
+/*
+================================================================================
+13. THROW vs THROWS
+================================================================================
+
+
+throw
+------
+Used to explicitly throw an exception.
+
+Example:
+*/
+
+class ThrowDemo {
+
+    static void checkAge(int age) {
+
+        if (age < 18) {
+            throw new IllegalArgumentException("Age must be 18 or above");
+        }
+    }
+}
+
+
+/*
+throws
+------
+Used in method declaration to declare that a method may throw
+an exception.
+
+Example:
+*/
+
+class ThrowsDemo {
+
+    static void readFile() throws java.io.IOException {
+
+        // File operation
+    }
+}
+
+
+/*
+================================================================================
+14. FINAL BIG PICTURE
+================================================================================
+
+
+                              Object
+                                |
+                            Throwable
+                         ____/        \____
+                        /                  \
+                     Error              Exception
+                      |                     |
+              +-------+-------+       +-----+------------------+
+              |               |       |                        |
+       OutOfMemoryError  StackOverflow  RuntimeException      Checked
+              |                     |          |              Exceptions
+              |                     |          |
+              |                     |    +-----+------+
+              |                     |    |            |
+              |                     | Arithmetic    NullPointer
+              |                     | Exception     Exception
+              |                     |
+              |                     +-- ClassCastException
+              |                     |
+              |                     +-- IllegalArgumentException
+              |                     |       |
+              |                     |       +-- NumberFormatException
+              |                     |
+              |                     +-- IndexOutOfBoundsException
+              |                             |
+              |                             +-- ArrayIndexOutOfBoundsException
+              |                             +-- StringIndexOutOfBoundsException
+              |
+              |
+              +------------------------------------------------
+                                                               |
+                                                        Checked Exceptions
+                                                               |
+                                          +--------------------+------------------+
+                                          |                    |                  |
+                                      IOException          SQLException     ClassNotFoundException
+                                          |
+                                  +-------+-------+
+                                  |               |
+                         FileNotFoundException  EOFException
+
+
+================================================================================
+15. ONE-LINE MEMORY TRICK
+================================================================================
+
+
+Object
+  ↓
+Throwable
+  ↓
+ ┌───────────────┬────────────────┐
+Error          Exception
+                 ↓
+          RuntimeException
+                 ↓
+            Unchecked
+
+Exception (outside RuntimeException)
+                 ↓
+              Checked
+
+
+Remember:
+
+ERROR        → Usually serious JVM/system problem
+EXCEPTION    → Application-level problem
+RUNTIME      → Unchecked
+NON-RUNTIME  → Usually Checked
+
+
+================================================================================
+*/

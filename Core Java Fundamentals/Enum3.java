@@ -1,10 +1,16 @@
 enum Laptop10{
-    Macbook(1000),XPS(500),Surface(750),Thinkpad(800);//Constructor...constructor is also a type of object
-    //for keeping the values into the bracket
+    Macbook(1000),XPS,Surface(750),Thinkpad(800);//Constructor...constructor is also a type of object.
+    //Now the objects are created in class it self so we are making the veriables and functions as private.
+    //Default constructor if the values are not specified
     private int price;
+    private Laptop10() {
+        price=500;
+        System.out.println("In default constructor "+ this.name());
+    }
+    //for keeping the values into the bracket...perametrised Constructor
     private Laptop10(int price){
         this.price = price;
-        
+        System.out.println("In parateterised constructor "+ this.name());
     }
     public int getPrice() {
         return price;
